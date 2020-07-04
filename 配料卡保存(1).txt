@@ -1,0 +1,95 @@
+1、版号要填代码+名称吗
+2、版号按关闭按钮要清空内容吗
+
+{
+	"zb": {
+		"bm": "sp",
+		"yphh": "7194125204",
+		"userid": "12742",
+		"yfcb_sd": "",
+		"yfcb_bzw": "",
+		"tsgy": "",
+		"sphh": "",
+		"yfcl_sx": "",
+		"yfcb_jg": "",
+		"yfcb_ml": "",
+		"yfcl_zb": "",
+		"yfcb_hj": "",
+		"ypmc": "",
+		"yfcb_fzgj": "",
+		"yfcb_qt": "",
+		"yfcb_jgbl": ""
+	},
+	"mx": [{
+		"chdm": "\n                    AC1823511\n                ",
+		"cmfj": "0",
+		"yfcwdj": "",
+		"cfbl": "100%棉",
+		"fk": "142",
+		"sybw": "",
+		"hsz": "",
+		"yfcwsh": "",
+		"dw": "",
+		"chmc": "J19/85952-1",
+		"yfdw": "",
+		"ys": "",
+		"id": "0",
+		"ord": "1",
+		"kez": "186",
+		"ypdh": "\n                    \n                ",
+		"dhdj": "",
+		"jfk": "",
+		"yphh": "7194125204",
+		"sjkez": "",
+		"bzdh": "",
+		"zhmlid": "1",
+		"zhml": "主面料",
+		"bbmc": "面料",
+		"tp": "http://192.168.35.104:8080/file/download/downloadFile.do?filePath=fabric/1050390/fabric53898/canvas_COL_P500.jpg",
+		"yfcwshbl": "",
+		"lydjlx": ""
+
+	}]
+}
+
+
+
+
+--------新增材料：yfcwshbl 【损耗率】默认值=0，
+
+损耗 = 损耗率 * 换算值（输入样品单耗，换算值会变，损耗也跟着变）
+getObj("mytext_" + m + "_yfcwsh").value = Math.round(Number(Number(yfcwshbl) * (Number(hsz))) * 1000000) / 1000000
+
+
+--------调材料接口：
+增加：getOneFabricInfo 
+增加hsbl 保存回传（换算比例）
+增加cbdj 保存回传（单价）回传（dj）
+
+
+
+换算值= 样品单耗 * 换算比例
+JS要做计算：hsz不能为空 getObj("mytext_" + m + "_hsz").value = Math.round(Number(getObj("mytext_" + m + "_ypdh").value / getObj("mytext_" + m + "_hsbl").value) * 1000000) / 1000000
+
+
+
+每行回传一个删除的标识 'status':'del' 
+--------------
+
+getOrderByZlmxidForOne 
+明细 增加sjlx（数据类型），新扫进的材料=0, 保存的时候回传  控制点：sjlx=1 ||=2 材料不能删，也不能修改单耗
+lydjlx新增的时候=0，   lydjlx=1 并且zhml <>'拉链' 并且 zhml<>'针织配件' 不能删除材料
+每行增加xh 回传的时候要带上，新增加的=0
+-------
+
+shbl是档案带出来的不能改
+
+
+-----
+getBomMainTainZbxx 增加字段yfcb_bz保存的时候回填（主表）
+
+		"yfcb_bzw": "",应该没有，删掉
+		
+		
+		主表回传bhks
+		

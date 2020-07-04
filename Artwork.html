@@ -1,0 +1,504 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="./css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="./css/message.css">
+    <link type="text/css" rel="stylesheet" href="./css/dialog.css">
+    <link type="text/css" rel="stylesheet" href="./css/common.css">
+    <link type="text/css" rel="stylesheet" href="./css/artwork.css">
+    <script type="text/javascript">
+        // 检测ie浏览器版本
+        function IEVersion() {
+            var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串  
+            var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器  
+            var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器  
+            var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1;
+            if (isIE) {
+                var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+                reIE.test(userAgent);
+                var fIEVersion = parseFloat(RegExp["$1"]);
+                if (fIEVersion == 7) {
+                    return 7;
+                } else if (fIEVersion == 8) {
+                    return 8;
+                } else if (fIEVersion == 9) {
+                    return 9;
+                } else if (fIEVersion == 10) {
+                    return 10;
+                } else {
+                    return 6; //IE版本<=7
+                }
+            } else if (isEdge) {
+                return 'edge'; //edge
+            } else if (isIE11) {
+                return 11; //IE11  
+            } else {
+                return -1; //不是ie浏览器
+            }
+        }
+        //console.log(IEVersion());
+
+        if (IEVersion() < 10 && IEVersion() != -1) {
+            alert("当前IE版本较低，部分功能不支持，请至少升级至IE10及以上版本！");
+        }
+    </script>
+</head>
+
+<body>
+    <!-- 表单 -->
+    <div class="page" id="form-page" style="display:none">
+        <div class="form">
+            <div class="filter" id="main-filter">
+                <div class="filter-item">
+                    <label>指令编号</label>
+                    <input type="text" class="filter-input disabled-input" id="zlbh" disabled \>
+                </div>
+                <div class="filter-item">
+                    <label>样号</label>
+                    <input type="text" class="filter-input disabled-input" id="ypbh" disabled>
+                </div>
+                <div class="filter-item">
+                    <label>款号</label>
+                    <input type="text" class="filter-input" id="kh" data-xzzlmxid="0" autocomplete="off">
+                    <input type="checkbox" value="1" class="checkbox_item" id="js-check">加版
+                </div>
+                <div class="filter-item">
+                    <label>二级品类</label>
+                    <div class="select-menu">
+                        <div class="select-menu-div">
+                            <input id="ejpl-input" readonly class="select-menu-input" />
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <ul class="select-menu-ul" id="ejpl">
+                            <!-- <li class="select-this">请选择</li> -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <label>版号及款式或领型</label>
+                    <input type="text" class="filter-input" id="bh" data-bhid="" autocomplete="off">
+                </div>
+                <div class="filter-item">
+                    <label>开发版型</label>
+                    <div class="select-menu">
+                        <div class="select-menu-div">
+                            <input id="kfbx-input" readonly class="select-menu-input" />
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <ul class="select-menu-ul" id="kfbx">
+                            <!-- <li class="select-this">请选择</li> -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <label>羽绒克重</label>
+                    <input type="text" class="filter-input" id="yrkz" autocomplete="off">
+                </div>
+                <div class="filter-item">
+                    <label>袜子双数</label>
+                    <div class="select-menu">
+                        <div class="select-menu-div">
+                            <input id="No1" readonly class="select-menu-input" />
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <ul class="select-menu-ul" id="wzss">
+                            <!-- <li class="select-this">请选择</li> -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <label>属性</label>
+                    <div class="select-menu">
+                        <div class="select-menu-div">
+                            <input id="No1" readonly class="select-menu-input" />
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <ul class="select-menu-ul" id="sx">
+                            <!-- <li class="select-this">请选择</li> -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <label>IP主题</label>
+                    <div class="select-menu">
+                        <div class="select-menu-div">
+                            <input id="No1" readonly class="select-menu-input" />
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <ul class="select-menu-ul" id="ipzt">
+                            <!-- <li class="select-this">请选择</li> -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <label>工艺说明</label>
+                    <input type="text" class="filter-input" value="" id="gysm" autocomplete="off">
+                </div>
+                <div class="filter-item">
+                    <label>厂家款号</label>
+                    <input type="text" class="filter-input" value="" id="cjkh" autocomplete="off">
+                </div>
+                <div class="filter-item">
+                    <label>厂家色号</label>
+                    <input type="text" class="filter-input" value="" id="cjsh" autocomplete="off">
+                </div>
+            </div>
+            <div class="btn-wrap">
+                <button class="btn green-btn" id="saveBtn">保存</button>
+            </div>
+        </div>
+        <input type="text" name="" id="bom" hidden>
+    </div>
+
+    <!-- 平面图 -->
+    <div class="page" id="floor-page" style="display:none">
+        <div class="head">
+            <ul id="print-tab" class="floatfix">
+                <li class="select" data-val="0">单张</li>
+                <li data-val="1">下装</li>
+                <li data-val="2">裤类主面料不同上衣</li>
+            </ul>
+            <div class="green-btn" id="print-btn">打印</div>
+            <img class="logo" src="./img/logo.png" alt="">
+            <p class="title"></p>
+            <div class="checkbox-list">
+                <div class="check-item">
+                    <label>通勤款</label>
+                    <input type="checkbox" value="0" class="checkbox_item" data-dm="3">
+                </div>
+                <div class="check-item">
+                    <label>IP联名款</label>
+                    <input type="checkbox" value="1" class="checkbox_item" data-dm="4">
+                </div>
+                <div class="check-item">
+                    <label>概念款</label>
+                    <input type="checkbox" value="2" class="checkbox_item" data-dm="1">
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="left-area">
+                <div class="com-wrap">
+                    <div class="com-item">
+                        <label>二级名称：</label>
+                        <span id="f_ejmc"></span>
+                    </div>
+                    <div class="com-item">
+                        <label>样号：</label>
+                        <span id="f_yh"></span>
+                    </div>
+                    <div class="com-item">
+                        <label>指令单号：</label>
+                        <span id="f_zldh"></span>
+                    </div>
+                </div>
+                <div class="ml-tb-wrap">
+                    <table cellspacing="0" cellpadding="0" id="ml-table" class="left-table">
+                        <tbody>
+                            <tr>
+                                <td class="ml-td"><span>主面料</span></td>
+                                <td class="info-td">
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="cslb-tab-wrap">
+                    <table cellspacing="0" cellpadding="0" id="cslb-table" class="left-table">
+                        <tbody>
+                            <tr id="csml-tr">
+                                <td class="ml-td">插色面料</td>
+                                <td class="info-td">
+
+                                </td>
+                            </tr>
+                            <tr id="lb-tr">
+                                <td class="ml-td">里布</td>
+                                <td class="info-td">
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bot-tb-wrap">
+                    <table cellspacing="0" cellpadding="0" id="zzpj-table" class="left-table">
+                        <tbody>
+                            <tr id="zzpj-tr">
+                                <td class="ml-td">针织配件</td>
+                                <td class="info-td">
+
+                                </td>
+                            </tr>
+                            <tr id="db-tr">
+                                <td class="ml-td">袋布</td>
+                                <td class="info-td">
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="right-area">
+                <div class="img-area">
+                    <img src="" alt="" height="100%">
+                </div>
+                <img src="" alt="" class="qr-code">
+                <div class="rbot-area">
+                    <div class="rbot-top-area">
+                        <p class="bh-title">印绣花编号：<span id="yxhbh"></span></p>
+                        <div class="bh-list" id="flbh">
+
+                        </div>
+                        <div class="print-list floatfix">
+                            <p id="f_bhks">版号及款式：<span></span></p>
+                            <p id="f_ggsm">工艺说明：<span></span></p>
+                            <p id="f_wzss">袜子双数：<span></span></p>
+                        </div>
+                    </div>
+                    <div class="bx-area">
+                        <div class="bx-info" id="tb-bx">版型</div>
+                        <div class="bx-table floatfix" id="size-table">
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bot floatfix">
+            <div class="signature">设计师：<span id="designer"></span></div>
+            <div class="signature">项目经理：<span id="xmjl"></span></div>
+            <div class="signature">副总监确认：<span id="fzj"></span></div>
+            <div class="signature">设计总监审核：<span id="sjzj"></span></div>
+        </div>
+    </div>
+
+
+    <!-- 版号及款式或领型 / 工艺说明选择弹出层 -->
+    <div class="pop-up" id="bhks-pup">
+        <div class="pup-head">
+            <p class="pup-title">版型贴模版选择</p>
+            <i class="fa fa-close (alias)" id="pup-close"></i>
+        </div>
+        <div class="pup-content">
+            <div class="filter">
+                <div class="filter-item">
+                    <label>材料编号/材料名称</label>
+                    <input type="text" class="filter-input" id="s-bh" style="width:250px">
+                </div>
+                <button class="btn green-btn" id="bhSearchBtn">查询</button>
+            </div>
+            <div class="table-wrap">
+                <div class="fixed-table-head">
+                    <table cellspacing="0" cellpadding="0">
+                        <thead>
+                            <tr>
+                                <th width="200">材料编号</th>
+                                <th width="400">名称</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="table-body">
+                    <table cellspacing="0" cellpadding="0" id="bh-table">
+                        <thead>
+                            <tr>
+                                <th width="200">材料编号</th>
+                                <th width="400">名称</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2">暂无数据</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 款号选择弹出层 -->
+    <div class="pop-up" id="kh-pup">
+        <div class="pup-head">
+            <p class="pup-title">选择款号</p>
+            <i class="fa fa-close (alias)" id="pup-close"></i>
+        </div>
+        <div class="pup-content">
+            <div class="filter">
+                <div class="filter-item">
+                    <label>款号</label>
+                    <input type="text" class="filter-input" id="s-kh" style="width:200px">
+                </div>
+                <div class="filter-item" style="margin-top: 6px;">
+                    <input type="checkbox" class="checkbox_item" id="copy-check">复制
+                </div>
+                <button class="btn green-btn" id="khSearchBtn">查询</button>
+            </div>
+            <div class="table-wrap">
+                <div class="fixed-table-head">
+                    <table cellspacing="0" cellpadding="0">
+                        <thead>
+                            <tr>
+                                <th width="200">款号</th>
+                                <th width="200">指令编号</th>
+                                <th width="200">样号</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="table-body">
+                    <table cellspacing="0" cellpadding="0" id="kh-table">
+                        <thead>
+                            <tr>
+                                <th width="200">款号</th>
+                                <th width="200">指令编号</th>
+                                <th width="200">样号</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2">暂无数据</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 配料卡iframe弹出层 -->
+    <div class="pop-up" id="plk-pup">
+        <div class="pup-head">
+            <p class="pup-title"></p>
+            <i class="fa fa-close (alias)" id="pup-close"></i>
+        </div>
+        <div class="pup-content">
+            <iframe id="plk_iframe" width="100%" height="100%" frameborder="no" border="0" src=""></iframe>
+        </div>
+    </div>
+
+
+    <!-- 加载提示 -->
+    <div class="loading">
+        <div class="spin-wrap">
+            <i class="fa fa-spinner fa-pulse"></i>
+        </div>
+        <p class="load-txt">加载中...</p>
+    </div>
+
+
+    <!-- 版号款式/工艺说明弹出层表格模板 -->
+    <script type="text/html" id="tpl_bhks">
+        {{each data}}
+        <tr data-id="{{$value.id}}">
+            <td>
+                <span class="clbh-link">{{$value.dm}}</span>
+            </td>
+            <td>
+                <a href="javascript:void(0);" class="clmc-link">{{$value.mc}}</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+
+    <!-- 款号弹出层表格模板 -->
+    <script type="text/html" id="tpl_khpup">
+        {{each data}}
+        <tr data-xzzlmxid="{{$value.zlmxid}}" data-xjsplbid="{{$value.xjsplbid}}" data-bhid="{{$value.bhid}}" data-bh="{{$value.bh}}"
+            data-kfbx="{{$value.kfbx}}" data-yphh="{{$value.ypbh}}" data-yrkz="{{$value.yrkz}}" data-bzdw="{{$value.bzdw}}" data-ipzt="{{$value.ipzt}}"
+            data-ipzt="{{$value.ipzt}}" data-style="{{$value.style}}" data-gysm="{{$value.gysm}}" data-gysmmc="{{$value.gysmmc}}">
+            <td>
+                <a href="javascript:void(0);" class="kh-link">{{$value.ypkh}}</a>
+            </td>
+            <td>
+                <a href="javascript:void(0);" class="zlbh-link">{{$value.ypzlbh}}</a>
+            </td>
+            <td>{{$value.ypbh}}</td>
+        </tr>
+        {{/each}}
+    </script>
+
+
+    <!-- 主面料模板 -->
+    <script type="text/html" id="tpl_zml">
+        {{each data[1]}}
+        <div>
+            <p>厂家编号：{{$value.chmc}}</p>
+            <p>材料编号：{{$value.chdm}}</p>
+        </div>
+        {{/each}}
+    </script>
+
+    <!--插色面料模板 -->
+    <script type="text/html" id="tpl_csml">
+        {{each data[2]}}
+        <div>
+            <p>{{$index + 1}}、厂家编号：{{$value.chmc}}</p>
+            <p>材料编号：{{$value.chdm}}</p>
+        </div>
+        {{/each}}
+    </script>
+
+    <!--里布模板 -->
+    <script type="text/html" id="tpl_lb">
+        {{each data[4]}}
+        <div>
+            <p>{{$index + 1}}、厂家编号：{{$value.chmc}}</p>
+            <p>材料编号：{{$value.chdm}}</p>
+        </div>
+        {{/each}}
+    </script>
+
+    <!-- 针织配件模板 -->
+    <script type="text/html" id="tpl_zzpj">
+        {{each data[3]}}
+        <div>
+            <p>{{$index + 1}}、厂家编号：{{$value.chmc}}</p>
+            <p>材料编号：{{$value.chdm}}</p>
+        </div>
+        {{/each}}
+    </script>
+
+    <!-- 袋布模板 -->
+    <script type="text/html" id="tpl_db">
+        {{each data[8]}}
+        <div>
+            <p>{{$index + 1}}、厂家编号：{{$value.chmc}}</p>
+            <p>材料编号：{{$value.chdm}}</p>
+        </div>
+        {{/each}}
+    </script>
+
+    <!--尺码模板 -->
+    <script type="text/html" id="tpl_size">
+        {{each data[7]}}
+        <div class="bx-item">
+            <span>{{$value.mc}}</span>
+            <span class="size">{{$value.sz}}</span>
+        </div>
+        {{/each}}
+    </script>
+
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/template.js"></script>
+    <script type="text/javascript" src="js/selectFilter.js"></script>
+    <script type="text/javascript" src="js/dialog.js"></script>
+    <script type="text/javascript" src="js/message.min.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/api.js"></script>
+    <script type="text/javascript" src="js/artwork.js"></script>
+</body>
+
+</html>

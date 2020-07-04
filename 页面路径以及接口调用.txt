@@ -1,0 +1,78 @@
+表单页面 zlmxid=350811 yphh为空 userid=12742,tzid=1 
+
+配料卡页面 yphh=7194125204   userid=12742,tzid=1 
+
+
+一、商品中心表单：（show=0为表单界面，show=1为平面图）
+
+	表单页面：
+
+	①无二级品类选项：http://192.168.35.231/QYWX/Test/IngredientCard/Artwork.html?show=0&zlmxid=446793&userid=12742&tzid=1
+
+	②有二级品类选项：http://192.168.35.231/QYWX/Test/IngredientCard/Artwork.html?show=0&zlmxid=350811&userid=12742&tzid=1
+
+
+	表单加载接口：http://192.168.35.231/service/HttpRequestSkill.ashx?action=getZlmxidInfoByZlmxid&source=pc
+
+	表单提交接口：
+
+	平面图界面： 
+
+	①没有下装：http://192.168.35.231/QYWX/Test/IngredientCard/Artwork.html?show=1&zlmxid=592791&ypzlbh=203YMA00001
+	②有下装：  http://192.168.35.231/QYWX/Test/IngredientCard/Artwork.html?show=1&zlmxid=582831&ypzlbh=203YMA00001
+
+	平面图接口：http://192.168.35.231/service/HttpRequestSkill.ashx?source=pc&action=getZlmxidAndmlbyzlmxid&source=pc
+
+
+二、配料卡：（show=0为配料卡有图，show=1配料卡无图，show=2总审核，show=3接收检查）
+	
+	配料卡页面：
+
+	①有匹配损耗比例数据：http://192.168.35.231/QYWX/Test/IngredientCard/Card.html?yphh=1193111161&show=1&bm=js&userid=0&ypzlbh=193MA000032&issave=1&issaveforshl=1
+
+	②无匹配损耗比例数据：http://192.168.35.231/QYWX/Test/IngredientCard/Card.html?yphh=1203609161&show=1&bm=sp&userid=0&ypzlbh=203MB000009
+	
+
+	表格加载接口：http://192.168.35.231/service/HttpRequestSkill.ashx?action=getOrderByCodeForOne&source=pc
+	
+
+·	材料成本 = 研发单价 * 换算值
+	采购成本 = 标准单耗 * 采购单价
+	报价 = 函数（材料编号）
+
+	没有用到的字段用隐藏控件
+
+	{
+                "chdm": //材料编号 				 
+                "cmfj": //尺码分解（1显示有分解 0显示无）
+                "kez": 报价克重
+                "yfcwdj": //研发单价
+                "cfbl": 成分比例
+                "ypdh": //样品单耗
+                "fk": 报价幅宽
+                "dhdj": 采购单价
+                "sybw": //使用部位
+                "hsz": 换算值
+                "jfk": 实际幅宽
+                "yphh": "5201600201",
+                "sjkez": 实际克重
+                "bzdh": //标准单耗
+                "zhmlid": 5,
+                "dw":  //换算后
+               	"zhml": //明细   					
+                "chmc": //材料名称					
+                "bbmc": //类别 					
+                "yfdw": //换算前
+                "ys": //颜色				
+                "id": 10729512,
+                "tp": "http://192.168.35.104:8080/file/download/downloadFile.do?filePath=fabric/1050371/fabric74408/canvas_COL_P1400.jpg",
+                "lydjlx": 1 //部门id  1商品中心；其它是技术部
+		"yfcwsh" 损耗
+		"yfcwshbl"损耗率
+		"xjchlbmc": "化纤面料",
+            },	
+
+
+
+
+

@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="./css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="./css/message.css">
+    <link type="text/css" rel="stylesheet" href="./css/dialog.css">
+    <link type="text/css" rel="stylesheet" href="./css/fixed-table.css?ver=20191024">
+    <link type="text/css" rel="stylesheet" href="./css/common.css">
+    <link type="text/css" rel="stylesheet" href="./css/card.css?ver=202003180924">
+    <script type="text/javascript">
+        // 检测ie浏览器版本
+        function IEVersion() {
+            var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串  
+            var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器  
+            var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器  
+            var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1;
+            if (isIE) {
+                var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+                reIE.test(userAgent);
+                var fIEVersion = parseFloat(RegExp["$1"]);
+                if (fIEVersion == 7) {
+                    return 7;
+                } else if (fIEVersion == 8) {
+                    return 8;
+                } else if (fIEVersion == 9) {
+                    return 9;
+                } else if (fIEVersion == 10) {
+                    return 10;
+                } else {
+                    return 6; //IE版本<=7
+                }
+            } else if (isEdge) {
+                return 'edge'; //edge
+            } else if (isIE11) {
+                return 11; //IE11  
+            } else {
+                return -1; //不是ie浏览器
+            }
+        }
+        //console.log(IEVersion());
+
+        if (IEVersion() < 10 && IEVersion() != -1) {
+            alert("当前IE版本较低，部分功能不支持，请至少升级至IE10及以上版本！");
+        }
+    </script>
+</head>
+
+<body>
+    <div class="page">
+        <div class="header">
+            <ul class="tab floatfix">
+                <li data-val="3" id="tab_pdf">配料卡材料明细</li>
+                <li class="selected-this" data-val="0" id="tab_plk">配料卡</li>
+                <!-- <li data-val="2" id="tab_check">接收检查</li> -->
+                <li data-val="1" id="tab_zsh">总审核</li>
+            </ul>
+            <p class="head-bm">
+                <label>当前操作部门：</label>
+                <span style="margin-right: 10px;">--</span>
+                <button id="saveBtn">保存</button>
+                <button id="importShBtn" class="origin-btn">导入损耗率</button>
+                <button id="importFan" class="origin-btn">导入方案</button>
+            </p>
+        </div>
+        <div id="table-content">
+            <!-- 配料卡筛选条件 -->
+            <div class="filter floatfix" id="card-filter">
+                <div class="filter-item" style="margin-top: 6px;">
+                    <input type="checkbox" value="1" class="checkbox_item" id="delCheck">刷退
+                </div>
+                <div class="filter-item">
+                    <label>扫描</label>
+                    <input type="password" class="filter-input" id="scanCl" style="ime-mode:disabled" autocomplete="off">
+                </div>
+                <div class="filter-item">
+                    <label>样号</label>
+                    <input type="text" class="m-yyh filter-input disabled-input" disabled>
+                </div>
+                <div class="filter-item">
+                    <label>样品名称</label>
+                    <input type="text" class="m-ypmc filter-input disabled-input" disabled style="width:100px">
+                </div>
+                <div class="filter-item">
+                    <label>货号</label>
+                    <input type="text" class="m-hh filter-input disabled-input" disabled style="width:100px">
+                </div>
+                <div class="filter-item">
+                    <label>版号及款式</label>
+                    <input type="text" class="m-bhks filter-input" id="i-bhks" autocomplete="off">
+                </div>
+                <div class="filter-item">
+                    <label>特殊工艺</label>
+                    <!-- <input type="text" class="m-tsgy filter-input"> -->
+                    <div class="select-menu">
+                        <div class="select-menu-div" style="width:120px">
+                            <input id="m-tsgy" readonly class="select-menu-input" style="width:110px" />
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <ul class="select-menu-ul" id="m-tsgy-ul">
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <label>洗涤方式</label>
+                    <input type="text" class="m-xdff filter-input disabled-input" disabled>
+                </div>
+                <div class="filter-item" style="display:none">
+                    <label>备注</label>
+                    <input type="text" class="m-bz filter-input">
+                </div>
+
+            </div>
+            <!-- 总审核筛选条件 -->
+            <div class="filter floatfix" id="check-filter">
+                <div class="left-filter floatfix">
+                    <div class="filter-item">
+                        <label style="min-width: 40px;">衣号</label>
+                        <input type="text" class="m-yyh filter-input" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>样品名称</label>
+                        <input type="text" class="m-ypmc filter-input" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label style="min-width: 40px;">货号</label>
+                        <input type="text" class="m-hh filter-input" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>版号及款式</label>
+                        <input type="text" class="m-bhks filter-input" disabled>
+                    </div>
+                </div>
+                <div class="right-filter floatfix">
+                    <div class="filter-item">
+                        <label>缝制工价</label>
+                        <input type="text" class="m-fzgj filter-input" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>水洗费用</label>
+                        <input type="text" class="m-sxfy filter-input" value="" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>加工倍率</label>
+                        <input type="text" class="m-jgbl filter-input" value="" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>面料成本</label>
+                        <input type="text" class="m-mlcb filter-input" value="" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>税率</label>
+                        <input type="text" class="m-sl filter-input" value="" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>辅料成本</label>
+                        <input type="text" class="m-flcb filter-input" value="" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>运费</label>
+                        <input type="text" class="m-yf filter-input" value="" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>包装物成本</label>
+                        <input type="text" class="m-bzwcb filter-input" value="" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>预缩费用</label>
+                        <input type="text" class="m-ysfy filter-input" value="" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>总成本价</label>
+                        <input type="text" class="m-zcbj filter-input" value="" disabled>
+                    </div>
+                    <div class="filter-item">
+                        <label>洗涤方式</label>
+                        <input type="text" class="m-xdff filter-input" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="big-img-area">
+                    <div id="big-img-con" onmousewheel="return bbimg(this)">
+                        <ul id="img-tab" class="floatfix">
+                            <li class="select-img" data-id="0">实样</li>
+                            <li data-id="1">成品</li>
+                        </ul>
+                        <a class="glyphicon glyphicon-zoom-in postA" onclick="amplify(1)">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                        <a class="glyphicon glyphicon-zoom-out postA" style="top:39px;" onclick="amplify(2)">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                        <img id="dragImg" border="0" src="" />
+                        <div class="img-info">
+                            <div class="img-info-item">
+                                <label>材料编号：</label>
+                                <span id="img-clbh"></span>
+                            </div>
+                            <div class="img-info-item">
+                                <label>材料名称：</label>
+                                <span id="img-clmc"></span>
+                            </div>
+                            <div class="img-info-item">
+                                <label>成份：</label>
+                                <span id="img-cf"></span>
+                            </div>
+                            <div class="img-info-item" style="display:inline-block">
+                                <label>克重：</label>
+                                <span id="img-kz"></span>
+                            </div>
+                            <div class="img-info-item" style="display:inline-block">
+                                <label>幅宽：</label>
+                                <span id="img-fk"></span>
+                            </div>
+                            <div class="img-info-item l-bord">
+                                <label>库存：</label>
+                                <span id="img-kcsl"></span>
+                            </div>
+                            <div class="img-info-item l-bord">
+                                <label>给设计师建议：</label>
+                                <span id="img-sjsjy"></span>
+                            </div>
+                            <div class="img-info-item l-bord">
+                                <label>给技术部指导建议：</label>
+                                <span id="img-jszdyj"></span>
+                            </div>
+                            <a id="show3d" target="_blank" href="">3D展示</a>
+                            <a id="btn-cldetail" target="_blank" href="">材料详情</a>
+                        </div>
+                    </div>
+                    <div class="display-bar" data-state="open">
+                        <i class="fa fa-angle-double-left"></i>
+                    </div>
+                </div>
+                <div class="table-area">
+                    <div class="fixed-table-box row-col-fixed">
+                        <!-- 固定表头 start -->
+                        <div class="fixed-table_header-wraper scroll-header">
+                            <table class="fixed-table_header" cellspacing="0" cellpadding="0" border="0">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" data-fixed="true" width="40" class="cz-td" data-colindex="0">
+                                            <div class="table-cell">操作</div>
+                                        </th>
+                                        <th rowspan="2" data-fixed="true" width="50" data-colindex="1">
+                                            <div class="table-cell">大类</div>
+                                        </th>
+                                        <th rowspan="2" width="60" data-colindex="2">
+                                            <div class="table-cell">明细</div>
+                                        </th>
+                                        <th rowspan="2" width="70" data-colindex="3">
+                                            <div class="table-cell">小类</div>
+                                        </th>
+                                        <th rowspan="2" width="100" class="sy-td" data-colindex="4">
+                                            <div class="table-cell">实样</div>
+                                        </th>
+                                        <th rowspan="2" width="80" class="sort" data-type="string" data-colindex="5">
+                                            <div class="table-cell">材料编号</div>
+                                        </th>
+                                        <th rowspan="2" width="100" data-colindex="6">
+                                            <div class="table-cell">材料名称</div>
+                                        </th>
+
+                                        <th rowspan="2" width="70" data-colindex="7">
+                                            <div class="table-cell">颜色</div>
+                                        </th>
+                                        <th colspan="3" width="165">
+                                            <div class="table-cell">样衣</div>
+                                        </th>
+                                        <th rowspan="2" width="200" data-colindex="11">
+                                            <div class="table-cell">使用部位</div>
+                                        </th>
+                                        <th rowspan="2" width="50" data-colindex="12">
+                                            <div class="table-cell">换算前</div>
+                                        </th>
+                                        <th rowspan="2" width="60" class="sort" data-type="num" data-colindex="13">
+                                            <div class="table-cell">换算值</div>
+                                        </th>
+                                        <th rowspan="2" width="50" data-colindex="14">
+                                            <div class="table-cell">换算后</div>
+                                        </th>
+                                        <th rowspan="2" width="50" class="sort" data-type="num" data-colindex="15">
+                                            <div class="table-cell">损耗率</div>
+                                        </th>
+                                        <th rowspan="2" width="60" class="sort" data-type="num" data-colindex="16">
+                                            <div class="table-cell">损耗</div>
+                                        </th>
+                                        <th rowspan="2" width="50" data-colindex="17">
+                                            <div class="table-cell">报价</div>
+                                        </th>
+                                        <th rowspan="2" width="60" data-colindex="18">
+                                            <div class="table-cell">尺码分解</div>
+                                        </th>
+                                        <th colspan="3" width="165">
+                                            <div class="table-cell">大货</div>
+                                        </th>
+                                        <th rowspan="2" width="70" data-colindex="22">
+                                            <div class="table-cell">成分比例</div>
+                                        </th>
+                                        <th rowspan="2" width="55" class="sort" data-type="num" data-colindex="23">
+                                            <div class="table-cell">报价幅宽</div>
+                                        </th>
+                                        <th rowspan="2" width="55" class="sort" data-type="num" data-colindex="24">
+                                            <div class="table-cell">实际幅宽</div>
+                                        </th>
+                                        <th rowspan="2" width="55" class="sort" data-type="num" data-colindex="25">
+                                            <div class="table-cell">报价克重</div>
+                                        </th>
+                                        <th rowspan="2" width="55" class="sort" data-type="num" data-colindex="26">
+                                            <div class="table-cell">实际克重</div>
+                                        </th>
+                                        <th rowspan="2" width="90" data-colindex="27">
+                                            <div class="table-cell">研发缩率</div>
+                                        </th>
+                                        <th rowspan="2" width="60" data-colindex="28">
+                                            <div class="table-cell">制单人</div>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th data-colindex="8" class="sort" data-type="num">
+                                            <div class="table-cell">样品单耗</div>
+                                        </th>
+                                        <th data-colindex="9" class="sort" data-type="num">
+                                            <div class="table-cell">研发单价</div>
+                                        </th>
+                                        <th data-colindex="10" class="sort" data-type="num">
+                                            <div class="table-cell">材料成本</div>
+                                        </th>
+                                        <th data-colindex="19" class="sort" data-type="num">
+                                            <div class="table-cell">标准单耗</div>
+                                        </th>
+                                        <th data-colindex="20" class="sort" data-type="num">
+                                            <div class="table-cell">采购单价</div>
+                                        </th>
+                                        <th data-colindex="21" class="sort" data-type="num">
+                                            <div class="table-cell">采购成本</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- 固定表头 end -->
+                        <!-- 表格内容 start -->
+                        <div class="fixed-table_body-wraper">
+                            <table class="fixed-table_body" cellspacing="0" cellpadding="0" border="0" id="data_table" onkeydown="keyDown(event)">
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- 表格内容 end -->
+                        <!-- 固定列 start -->
+                        <div class="fixed-table_fixed fixed-table_fixed-left" style="display:none">
+                            <div class="fixed-table_header-wraper">
+                                <table class="fixed-table_header" cellspacing="0" cellpadding="0" border="0">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2" data-fixed="true" width="50">
+                                                <div class="table-cell" width="100">类别</div>
+                                            </th>
+                                            <th rowspan="2" width="60">
+                                                <div class="table-cell" width="100">明细</div>
+                                            </th>
+                                            <th rowspan="2" width="100">
+                                                <div class="table-cell">实样</div>
+                                            </th>
+                                            <th rowspan="2" width="100">
+                                                <div class="table-cell">材料编号</div>
+                                            </th>
+                                            <th rowspan="2" width="100">
+                                                <div class="table-cell">材料名称</div>
+                                            </th>
+                                            <th rowspan="2" width="70">
+                                                <div class="table-cell">颜色</div>
+                                            </th>
+                                            <th colspan="3" width="250">
+                                                <div class="table-cell">样衣</div>
+                                            </th>
+                                            <th rowspan="2" width="70">
+                                                <div class="table-cell">使用部位</div>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <div class="table-cell" width="83">样品单耗</div>
+                                            </th>
+                                            <th>
+                                                <div class="table-cell" width="83">研发单价</div>
+                                            </th>
+                                            <th>
+                                                <div class="table-cell" width="83">材料成本</div>
+                                            </th>
+                                        </tr>
+
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="fixed-table_body-wraper" id="l-ftable-wrapper">
+                                <table class="fixed-table_body" cellspacing="0" cellpadding="0" border="0" id="fixed_table">
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- 固定列 end -->
+                    </div>
+                </div>
+            </div>
+            <div class="table-footer floatfix">
+                <div class="records-item">
+                    <label>单耗汇总：</label>
+                    <span id="total-dh">--</span>
+                </div>
+                <div class="records-item">
+                    <label>总材料成本：</label>
+                    <span id="total-clcb">--</span>
+                </div>
+                <div class="records-item">
+                    <label>总记录数：</label>
+                    <span id="table-records">--</span>
+                </div>
+                <div class="records-item">
+                    <div class="legend" id="sjs-legend"></div>
+                    <label>设计师维护：</label>
+                    <span id="sjs-records">--</span>
+                </div>
+                <div class="records-item">
+                    <div class="legend" id="sjb-legend"></div>
+                    <label>技术部维护：</label>
+                    <span id="jsb-records">--</span>
+                </div>
+            </div>
+        </div>
+        <div id="pdf-content">
+            <iframe src="http://webt.lilang.com:9001/MyUpload/201911/2019111573979319842.pdf" frameborder="0" width="100%" height="100%"></iframe>
+        </div>
+    </div>
+
+    <!-- 明细弹出层 -->
+    <div class="pop-up" id="mx-pup">
+        <div class="pup-mask"></div>
+        <div class="pup-wrap">
+            <div class="pup-head">
+                <p class="pup-title">选择明细</p>
+                <i class="fa fa-close (alias)" id="pup-close"></i>
+            </div>
+            <div class="pup-content">
+                <p class="clbh">
+                    <label>当前要添加的材料编号：</label>
+                    <span>--</span>
+                </p>
+                <ul id="mx-list">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 版号及款式或领型选择弹出层 -->
+    <div class="pop-up" id="bhks-pup">
+        <div class="pup-head">
+            <p class="pup-title">版型贴模版选择</p>
+            <i class="fa fa-close (alias)" id="pup-close"></i>
+        </div>
+        <div class="pup-content">
+            <div class="filter">
+                <div class="filter-item">
+                    <label>材料编号/材料名称</label>
+                    <input type="text" class="filter-input" id="s-bh" style="width:250px">
+                </div>
+                <button class="btn green-btn" id="bhSearchBtn">查询</button>
+            </div>
+            <div class="table-wrap">
+                <div class="fixed-table-head">
+                    <table cellspacing="0" cellpadding="0">
+                        <thead>
+                            <tr>
+                                <th width="200">材料编号</th>
+                                <th width="400">名称</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="table-body">
+                    <table cellspacing="0" cellpadding="0" id="bh-table">
+                        <thead>
+                            <tr>
+                                <th width="200">材料编号</th>
+                                <th width="400">名称</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2">暂无数据</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导入方案弹出层 -->
+    <div class="pop-up" id="fan-pup">
+        <div class="pup-head">
+            <p class="pup-title">导入方案</p>
+            <i class="fa fa-close (alias)" id="pup-close"></i>
+        </div>
+        <div class="pup-content">
+            <div class="table-wrap">
+                <div class="fixed-table-head">
+                    <table cellspacing="0" cellpadding="0">
+                        <thead>
+                            <tr>
+                                <th width="200">品类</th>
+                                <th width="400">方案名称</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="table-body">
+                    <table cellspacing="0" cellpadding="0" id="fan-table">
+                        <thead>
+                            <tr>
+                                <th width="200">品类</th>
+                                <th width="400">方案名称</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2">暂无数据</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 材料图片选择弹出层 -->
+    <div class="pop-up" id="imgchoose-pup" style="display:none">
+        <div class="pup-head">
+            <p class="pup-title">材料选择</p>
+            <i class="fa fa-close (alias)" id="pup-close"></i>
+        </div>
+        <div class="pup-content">
+            <div class="filter">
+                <div class="filter-item">
+                    <label>色号</label>
+                    <div class="select-menu">
+                        <div class="select-menu-div">
+                            <input id="pupsh-input" readonly class="select-menu-input" />
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <ul class="select-menu-ul" id="pupsh-sel">
+                            <li class="select-this">请选择</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <label>规格</label>
+                    <div class="select-menu">
+                        <div class="select-menu-div">
+                            <input id="pupgg-input" readonly class="select-menu-input" />
+                            <i class="fa fa-caret-down"></i>
+                        </div>
+                        <ul class="select-menu-ul" id="pupgg-sel">
+                            <li class="select-this">请选择</li>
+                        </ul>
+                    </div>
+                </div>
+                <button class="btn green-btn" id="imgSearchBtn">查询</button>
+                <button class="btn origin-btn" id="addClBtn">确定添加</button>
+                <p class="selected-imgnum">
+                    <label>已选中材料个数：</label>
+                    <span>--</span>
+                </p>
+            </div>
+            <div class="climglist">
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 右击菜单栏 -->
+    <div id="rclick-menu">
+        <p class="title">功能选择</p>
+        <ul class="menu-list">
+            <li id="addYfdj">刷新研发单价</li>
+        </ul>
+    </div>
+
+
+    <!-- 加载提示 -->
+    <div class="loading">
+        <div class="spin-wrap">
+            <i class="fa fa-spinner fa-pulse"></i>
+        </div>
+        <p class="load-txt">加载中...</p>
+    </div>
+
+
+    <!-- -------------模板区-------------- -->
+
+    <!-- 版号款式/工艺说明弹出层表格模板 -->
+    <script type="text/html" id="tpl_bhks">
+        {{each data}}
+        <tr data-id="{{$value.id}}">
+            <td>
+                <span class="clbh-link">{{$value.dm}}</span>
+            </td>
+            <td>
+                <a href="javascript:void(0);" class="clmc-link">{{$value.mc}}</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+
+    <!-- 方案弹出层表格模板 -->
+    <script type="text/html" id="tpl_fan">
+        {{each data}}
+        <tr>
+            <td>
+                <span class="pl-link" data-plid="{{$value.splbid}}">{{$value.splbmc}}</span>
+            </td>
+            <td>
+                <a href="javascript:void(0);" class="fan-link" data-faid="{{$value.id}}">{{$value.bz}}</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+
+    <!-- 表格行模板 -->
+    <script type="text/html" id="main_tr">
+        {{each bom}}
+        <tr data-lb="{{$value.ord}}" data-bm="{{$value.lydjlx}}" data-zhmlid="{{$value.zhmlid}}" data-chdm="{{$value.chdm}}" data-id="{{$value.id}}"
+            data-dj="{{$value.dj}}" data-hsbl="{{$value.hsbl}}" status="" data-sjlx="{{$value.sjlx}}" data-xh="{{$value.xh}}"
+            data-chlbid="{{$value.chlbid}}" data-xjchlbid="{{$value.xjchlbid}}" data-isNew="0" data-isEdit="0" {{if $value.lydjlx=='1'
+            }} bmlx="{{$value.lydjlx}}" {{else}} bmlx="-1" {{/if}}>
+            <td width="40" class="cz-td">
+                <div class="table-cell">
+                    <span class="del-btn">删除</span>
+                </div>
+            </td>
+            <td width="50" class="lb-td">
+                <div class="table-cell {{if $value.iscolor == '1'}} link {{/if}}">{{$value.bbmc}}</div>
+            </td>
+            <td width="60" class="mx-td">
+                <div class="table-cell">{{$value.zhml}}</div>
+            </td>
+            <td width="70" class="xl-td">
+                <div class="table-cell">{{$value.xjchlbmc}}</div>
+            </td>
+            <td width="100" class="sy-td" data-clbh="{{$value.chdm}}" data-clmc="{{$value.chmc}}" data-cf="{{$value.cfbl}}" data-kz="{{$value.kez}}"
+                data-fk="{{$value.fk}}" data-bjid="{{$value.bjid}}" data-kcsl="{{$value.kcsl}}" data-sjsyj="{{$value.sjsyj}}"
+                data-jszdyj="{{$value.jszdyj}}">
+                <div class="table-cell">
+                    <img src="{{$value.tp}}" alt="">
+                </div>
+            </td>
+            <td width="80" class="clbh-td">
+                <div class="table-cell">
+                    <a href="{{$value.tp}}" target="_blank">{{$value.chdm}}</a>
+                </div>
+            </td>
+            <td width="100" class="clmc-td">
+                <div class="table-cell">{{$value.chmc}}</div>
+            </td>
+            <td width="70" class="ys-td">
+                <div class="table-cell">{{$value.ys}}</div>
+            </td>
+            {{if $value.sjlx == "1" || $value.sjlx == "2" || (getUrlParam("isypdh") == "0" && $value.isdhscl == 1 )}}
+            <td width="55" class="ypdh-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{$value.ypdh}}" class="txt-right can-edit" disabled>
+                </div>
+            </td>
+            {{else}}
+            <td width="55" class="edit-td ypdh-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{$value.ypdh}}" class="txt-right can-edit">
+                </div>
+            </td>
+            {{/if}} {{if getUrlParam("bm") == "sp" || getUrlParam("bm") == "dh" || (getUrlParam("isyfcwdj") == "0" && !indexOf($value.xjchlbmc,
+            '模具'))}}
+            <td width="55" class="yfdj-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{$value.yfcwdj}}" class="txt-right  can-edit" disabled>
+                </div>
+            </td>
+            {{else}}
+            <td width="55" class="edit-td yfdj-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{$value.yfcwdj}}" class="txt-right can-edit">
+                </div>
+            </td>
+            {{/if}}
+            <td width="55" class="clcb-td">
+                <div class="table-cell txt-right">{{formatNumber(($value.yfcwdj * ($value.hsz + $value.yfcwsh)),3)}}</div>
+            </td>
+            {{if getUrlParam("issave") == "0"}}
+            <td width="200" class="sybw-td">
+                <div class="table-cell" style="text-align:left;padding-left:5px;">{{$value.sybw}}</div>
+            </td>
+            {{else}}
+            <td width="200" class="edit-td sybw-td">
+                <div class="table-cell">
+                    <textarea type="text" class="can-edit">{{$value.sybw}}</textarea>
+                </div>
+            </td>
+            {{/if}}
+            <td width="50" class="hsq-td">
+                <div class="table-cell">{{$value.yfdw}}</div>
+            </td>
+            <td width="60" class="hsz-td">
+                <div class="table-cell txt-right">{{formatNumber($value.hsz, 6)}}</div>
+            </td>
+            <td width="50" class="hsh-td">
+                <div class="table-cell">{{$value.dw}}</div>
+            </td>
+            {{if getUrlParam("bm") == "dh"}}
+            <td width="50" class="shl-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{$value.yfcwshbl}}" class="txt-right can-edit" disabled>
+                </div>
+            </td>
+            {{else}}
+            <td width="50" class="edit-td shl-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{$value.yfcwshbl}}" class="txt-right can-edit">
+                </div>
+            </td>
+            {{/if}}
+            <td width="60" class="sh-td">
+                <div class="table-cell txt-right">{{formatNumber($value.yfcwsh, 6)}}</div>
+            </td>
+            <td width="50" class="bj-td">
+                <div class="table-cell">
+                    <a href="javascript:void(0)">查看</a>
+                </div>
+            </td>
+            <td width="60" class="cmfj-td" data-id="{{$value.cmfj}}">
+                <div class="table-cell">
+                    {{if $value.cmfj == 1}}
+                    <a href="javascript:void(0)">有分解</a> {{else}}
+                    <a href="javascript:void(0)">无</a> {{/if}}
+                </div>
+            </td>
+            <td width="55" class="bzdh-td">
+                <div class="table-cell txt-right">{{formatNumber($value.bzdh, 3)}}</div>
+            </td>
+            <td width="55" class="cgdj-td">
+                <div class="table-cell txt-right">{{$value.dhdj}}</div>
+            </td>
+            <td width="55" class="cgcb-td">
+                <div class="table-cell txt-right">{{formatNumber(($value.hsz + $value.yfcwsh) * $value.dhdj, 3)}}</div>
+            </td>
+            <td width="70" class="cfbl-td">
+                <div class="table-cell">{{$value.cfbl}}</div>
+            </td>
+            <td width="55" class="bjfk-td">
+                <div class="table-cell txt-right">{{$value.fk}}</div>
+            </td>
+            <td width="55" class="sjfk-td">
+                <div class="table-cell txt-right">{{$value.jfk}}</div>
+            </td>
+            <td width="55" class="bjkz-td">
+                <div class="table-cell txt-right">{{$value.kez}}</div>
+            </td>
+            <td width="55" class="sjkz-td">
+                <div class="table-cell txt-right">{{$value.sjkez}}</div>
+            </td>
+            <td width="90" class="ssl-td">
+                <div class="table-cell">
+                    {{if $value.sxj2 != "" && $value.sxj2 != null}}
+                    <p {{if $value.sxj2pdjg=="不合格" }} style="color:#ff4040" {{/if}}>水洗经：{{$value.sxj2}}</p>
+                    {{/if}} {{if $value.sxj2 != "" && $value.sxw2 != null}}
+                    <p {{if $value.sxw2pdjg=="不合格" }} style="color:#ff4040" {{/if}}>水洗纬：{{$value.sxw2}}</p>
+                    {{/if}} {{if $value.sxj2 != "" && $value.qtj2 != null}}
+                    <p {{if $value.qtj2pdjg=="不合格" }} style="color:#ff4040" {{/if}}>汽烫经：{{$value.qtj2}}</p>
+                    {{/if}} {{if $value.sxj2 != "" && $value.qtw2 != null}}
+                    <p {{if $value.qtw2pdjg=="不合格" }} style="color:#ff4040" {{/if}}>汽烫纬：{{$value.qtw2}} </p>
+                    {{/if}}
+                </div>
+            </td>
+            <td width="60" class="zdr-td">
+                <div class="table-cell">{{$value.zdr}}</div>
+            </td>
+            <td width="60" class="json-td" style="display:none">
+                <div class="table-cell">
+                    <input value="" />
+                </div>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+
+    <!-- 固定表格行模板 -->
+    <script type="text/html" id="fixed_tr">
+        {{each bom}}
+        <tr data-lb="{{$value.ord}}" data-bm="{{$value.lydjlx}}" data-zhmlid="{{$value.zhmlid}}" data-chdm="{{$value.chdm}}" data-id="{{$value.id}}">
+            <td width="50" class="lb-td">
+                <div class="table-cell">{{$value.bbmc}}</div>
+            </td>
+            <td width="60" class="mx-td">
+                <div class="table-cell">{{$value.zhml}}</div>
+            </td>
+            <td width="80" class="xl-td">
+                <div class="table-cell">{{$value.xjchlbmc}}</div>
+            </td>
+            <td width="100" class="sy-td" data-clbh="{{$value.chdm}}" data-clmc="{{$value.chmc}}" data-cf="{{$value.cfbl}}" data-kz="{{$value.kez}}"
+                data-fk="{{$value.fk}}">
+                <div class="table-cell">
+                    <img src="{{$value.tp}}" alt="">
+                </div>
+            </td>
+            <td width="100" class="clbh-td">
+                <div class="table-cell">{{$value.chdm}}</div>
+            </td>
+            <td width="100" class="clmc-td">
+                <div class="table-cell">{{$value.chmc}}</div>
+            </td>
+            <td width="70" class="ys-td">
+                <div class="table-cell">{{$value.ys}}</div>
+            </td>
+            <td width="83" class="ypdh-td edit-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{$value.ypdh}}" class="txt-right">
+                </div>
+            </td>
+            <td width="83" class="yfdj-td edit-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{$value.yfcwdj}}" class="txt-right">
+                </div>
+            </td>
+            <td width="83" class="clcb-td">
+                <div class="table-cell">{{$value.yfcwdj * $value.hsz}}</div>
+            </td>
+            <td width="70" class="sybw-td edit-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{$value.sybw}}">
+                </div>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+
+    <!-- 扫材料要插入的表格行模板 -->
+    <script type="text/html" id="scan_main_tr">
+        <tr data-lb="{{ord}}" data-bm="0" data-zhmlid="{{zhmlid}}" data-isNew="1" data-chdm="{{chdm}}" data-id="0" data-dj="{{cbdj}}"
+            data-hsbl="{{hsbl}}" status="" data-sjlx="0" data-xh="0" data-chlbid="{{chlbid}}" data-xjchlbid="{{xjchlbid}}" data-isEdit="0"
+            {{if getUrlParam( "bm")=="sp" }} bmlx="1" style="background-color: #faf5d6;" {{else}} bmlx="-1" {{/if}}>
+            {{if getUrlParam("issave") != "0"}}
+            <td width="40" class="cz-td">
+                <div class="table-cell">
+                    <span class="del-btn">删除</span>
+                </div>
+            </td>
+            {{/if}}
+            <td width="50" class="lb-td">
+                <div class="table-cell">{{bbmc}}</div>
+            </td>
+            <td width="60" class="mx-td">
+                <div class="table-cell">{{zhml}}</div>
+            </td>
+            <td width="70" class="xl-td">
+                <div class="table-cell">{{xjchlbmc}}</div>
+            </td>
+            <td width="100" class="sy-td" data-clbh="{{chdm}}" data-clmc="{{chmc}}" data-cf="{{cfbl}}" data-kz="{{kez}}" data-fk="{{fk}}"
+                data-bjid="{{bjid}}" data-kcsl="{{kcsl}}" data-sjsyj="{{sjsyj}}" data-jszdyj="{{jszdyj}}">
+                <div class="table-cell">
+                    <img src="{{tp}}" alt="">
+                </div>
+            </td>
+            <td width="80" class="clbh-td">
+                <div class="table-cell">
+                    <a href="{{tp}}" target="_blank">{{chdm}}</a>
+                </div>
+            </td>
+            <td width="100" class="clmc-td">
+                <div class="table-cell">{{chmc}}</div>
+            </td>
+            <td width="70" class="ys-td">
+                <div class="table-cell">{{ys}}</div>
+            </td>
+
+            <td width="55" class="ypdh-td edit-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="" class="txt-right can-edit">
+                </div>
+            </td>
+            {{if getUrlParam("bm") == "sp" || getUrlParam("bm") == "dh" || (getUrlParam("isyfcwdj") == "0" && !indexOf(xjchlbmc, '模具'))}}
+            <td width="55" class="yfdj-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{yfcwdj}}" class="txt-right can-edit" disabled>
+                </div>
+            </td>
+            {{else}}
+            <td width="55" class="yfdj-td edit-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="{{yfcwdj}}" class="txt-right can-edit">
+                </div>
+            </td>
+            {{/if}}
+            <td width="55" class="clcb-td">
+                <div class="table-cell txt-right"></div>
+            </td>
+            <td width="200" class="sybw-td edit-td">
+                <div class="table-cell">
+                    <textarea type="text" class="can-edit"></textarea>
+                </div>
+            </td>
+            <td width="50" class="hsq-td">
+                <div class="table-cell"></div>
+            </td>
+            <td width="60" class="hsz-td">
+                <div class="table-cell txt-right"></div>
+            </td>
+            <td width="50" class="hsh-td">
+                <div class="table-cell"></div>
+            </td>
+            {{if getUrlParam("bm") == "dh"}}
+            <td width="50" class="shl-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="0" class="txt-right" disabled>
+                </div>
+            </td>
+            {{else}}
+            <td width="50" class="shl-td edit-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="0" class="txt-right">
+                </div>
+            </td>
+            {{/if}}
+            <td width="60" class="sh-td">
+                <div class="table-cell"></div>
+            </td>
+            <td width="50" class="bj-td">
+                <div class="table-cell">
+                    <a href="javascript:void(0)">查看</a>
+                </div>
+            </td>
+            <td width="60" class="cmfj-td" data-id="0">
+                <div class="table-cell">
+                    <a href="javascript:void(0)">无</a>
+                </div>
+            </td>
+            <td width="55" class="bzdh-td">
+                <div class="table-cell txt-right"></div>
+            </td>
+            <td width="55" class="cgdj-td">
+                <div class="table-cell txt-right"></div>
+            </td>
+            <td width="55" class="cgcb-td">
+                <div class="table-cell txt-right"></div>
+            </td>
+            <td width="70" class="cfbl-td">
+                <div class="table-cell">{{cfbl}}</div>
+            </td>
+            <td width="55" class="bjfk-td">
+                <div class="table-cell txt-right">{{fk}}</div>
+            </td>
+            <td width="55" class="sjfk-td">
+                <div class="table-cell txt-right"></div>
+            </td>
+            <td width="55" class="bjkz-td">
+                <div class="table-cell txt-right">{{kez}}</div>
+            </td>
+            <td width="55" class="sjkz-td">
+                <div class="table-cell txt-right"></div>
+            </td>
+            <td width="90" class="ssl-td">
+                <div class="table-cell">{{ssl}}</div>
+            </td>
+            <td width="60" class="zdr-td">
+                <div class="table-cell"></div>
+            </td>
+        </tr>
+    </script>
+
+
+    <!-- 扫材料要插入的固定表格行模板 -->
+    <script type="text/html" id="scan_fixed_tr">
+        <tr data-lb="{{ord}}" data-bm="{{lydjlx}}" data-zhmlid="{{zhmlid}}" data-isNew="1" data-chdm="{{chdm}}" data-id="0">
+            <td width="50">
+                <div class="table-cell">{{bbmc}}</div>
+            </td>
+            <td width="60">
+                <div class="table-cell">{{zhml}}</div>
+            </td>
+            <td width="80" class="xl-td">
+                <div class="table-cell">{{xjchlbmc}}</div>
+            </td>
+            <td width="100" class="sy-td" data-clbh="{{chdm}}" data-clmc="{{chmc}}" data-cf="{{cfbl}}" data-kz="{{kez}}" data-fk="{{fk}}">
+                <div class="table-cell">
+                    <img src="{{tp}}" alt="">
+                </div>
+            </td>
+            <td width="100">
+                <div class="table-cell">{{chdm}}</div>
+            </td>
+            <td width="100">
+                <div class="table-cell">{{chmc}}</div>
+            </td>
+            <td width="70">
+                <div class="table-cell"></div>
+            </td>
+            <td width="83" class="edit-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="" class="txt-right">
+                </div>
+            </td>
+            <td width="83" class="edit-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="" class="txt-right">
+                </div>
+            </td>
+            <td width="83">
+                <div class="table-cell"></div>
+            </td>
+            <td width="70" class="edit-td">
+                <div class="table-cell">
+                    <input type="text" name="" id="" value="">
+                </div>
+            </td>
+        </tr>
+    </script>
+
+
+    <!-- 明细模板 -->
+    <script type="text/html" id="tpl_mx">
+        {{each data}}
+        <li data-mxid="{{$value.zhmlid}}" data-ord="{{$value.ord}}" data-bbmc="{{$value.bbmc}}" data-zhml="{{$value.zhml}}">
+            {{$value.bbmc}} / {{$value.zhml}}
+        </li>
+        {{/each}}
+    </script>
+
+
+    <!-- 材料图片列表模板 -->
+    <script type="text/html" id="tpl_imglist">
+        {{each data}}
+        <div class="pup-img-item">
+            <div class="pup-img-wrap">
+                <img src="{{$value.tp}}" alt="">
+            </div>
+            <div class="pup-img-info">
+                <p>
+                    <label>材料编号：</label>
+                    <span>{{$value.chdm}}</span>
+                </p>
+                <p>
+                    <label>材料名称：</label>
+                    <span>{{$value.chmc}}</span>
+                </p>
+                <p>
+                    <label>价格：</label>
+                    <span>{{$value.cbdj}}</span>
+                </p>
+                <p>
+                    <label>颜色：</label>
+                    <span>{{$value.ys}}</span>
+                </p>
+            </div>
+            <input type="text" hidden value="" />
+        </div>
+        {{/each}}
+    </script>
+
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/selectFilter.js"></script>
+    <script type="text/javascript" src="js/template.js"></script>
+    <script type="text/javascript" src="js/newmap.js"></script>
+    <script type="text/javascript" src="js/fixed-table.js"></script>
+    <script type="text/javascript" src="js/message.min.js"></script>
+    <script type="text/javascript" src="js/dialog.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/api.js"></script>
+    <script type="text/javascript" src="js/card.js"></script>
+
+</body>
+
+</html>
