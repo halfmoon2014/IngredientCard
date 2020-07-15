@@ -988,50 +988,55 @@ $(function () {
                 }
 
             } else {
-                $("#saveBtn").addClass("disabledClick");
-                $(".loading").show();
-                $(".load-txt").text("正在保存...");
 
-                $.ajax({
-                    type: "POST",
-                    timeout: 300 * 1000,
-                    contentType: "application/json",
-                    url: api + "?action=saveZlmxidInfoByZlmxid&source=pc",
-                    data: JSON.stringify(postData()),
-                    success: function (msg) {
-                        if (msg.errcode == "0") {
+                //调用父层iframe的saveDataCheck(jsonObj)进行判断，如果返回true才调用保存接口
+                if (window.parent.saveDataCheck(postData())) {
 
-                            $(".loading").fadeOut(200);
-                            setTimeout(function () {
-                                $.message('保存成功！');
+                    $("#saveBtn").addClass("disabledClick");
+                    $(".loading").show();
+                    $(".load-txt").text("正在保存...");
+
+                    $.ajax({
+                        type: "POST",
+                        timeout: 300 * 1000,
+                        contentType: "application/json",
+                        url: api + "?action=saveZlmxidInfoByZlmxid&source=pc",
+                        data: JSON.stringify(postData()),
+                        success: function (msg) {
+                            if (msg.errcode == "0") {
+
+                                $(".loading").fadeOut(200);
                                 setTimeout(function () {
-                                    _copyyphh = "";
-                                    loadMainForm();
-                                    loadTableData();
-                                }, 2000);
-                            }, 200);
+                                    $.message('保存成功！');
+                                    setTimeout(function () {
+                                        _copyyphh = "";
+                                        loadMainForm();
+                                        loadTableData();
+                                    }, 2000);
+                                }, 200);
 
-                            inputChange = false;
+                                inputChange = false;
 
-                        } else {
-                            //$(".load-txt").text(msg.errmsg);
+                            } else {
+                                //$(".load-txt").text(msg.errmsg);
+                                $("#saveBtn").removeClass("disabledClick");
+                                $(".loading").fadeOut(200);
+                                setTimeout(function () {
+                                    Ealt.Ealert({
+                                        title: '提示',
+                                        message: msg.errmsg
+                                    })
+                                }, 200);
+                            }
+
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
                             $("#saveBtn").removeClass("disabledClick");
-                            $(".loading").fadeOut(200);
-                            setTimeout(function () {
-                                Ealt.Ealert({
-                                    title: '提示',
-                                    message: msg.errmsg
-                                })
-                            }, 200);
+                            $(".load-txt").text(XMLHttpRequest.status + " | " + textStatus);
+
                         }
-
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        $("#saveBtn").removeClass("disabledClick");
-                        $(".load-txt").text(XMLHttpRequest.status + " | " + textStatus);
-
-                    }
-                }); //end AJAX  
+                    }); //end AJAX  
+                }
             }
 
         }
